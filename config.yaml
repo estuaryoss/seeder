@@ -1,0 +1,7 @@
+deploy_policy: fill/robin/random
+access_token: None
+eureka: "http://192.168.0.11:8080/eureka/v2"
+discovery: "http://192.168.0.11:8081/"
+deployer:
+  - "http://192.168.0.11:8082/"
+  - "http://192.168.0.11:8083/"
