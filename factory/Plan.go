@@ -20,5 +20,15 @@ func (c *planCommandCLI) Run(args []string) int {
 	return 0
 }
 
-func (c *planCommandCLI) Synopsis() string { return "" }
-func (c *planCommandCLI) Help() string     { return "" }
+func (c *planCommandCLI) Synopsis() string { return "Usage: seeder plan" }
+func (c *planCommandCLI) Help() string {
+	return `
+Usage: seeder plan
+
+    Creates the deployments plan. By default, creating a plan consists of:
+        -  reading remote state and comparing to the current plan
+        -  proposing a set of actions in order to sync remote state with the current plan
+
+Call it after 'init'. Always.
+`
+}

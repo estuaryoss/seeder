@@ -20,5 +20,17 @@ func (c *validateCommandCLI) Run(args []string) int {
 	return 0
 }
 
-func (c *validateCommandCLI) Synopsis() string { return "" }
-func (c *validateCommandCLI) Help() string     { return "" }
+func (c *validateCommandCLI) Synopsis() string { return "Usage: seeder validate" }
+func (c *validateCommandCLI) Help() string {
+	return `
+Usage: seeder validate
+
+  Performs several layers of validation before trying to create a deployment plan:
+- global config validation
+- deployment files validation
+
+  It only validates local files, but no objects found on the remote state.
+
+Call it before 'init'. Always.
+`
+}

@@ -31,6 +31,10 @@ func (service *DeployerService) GetHomePageUrl() string {
 	return service.HomePageUrl
 }
 
+func (service *DeployerService) GetAccessToken() string {
+	return service.AccessToken
+}
+
 func (service *DeployerService) GetApiResponse() *models.ApiResponse {
 	return service.ApiResponse
 }
