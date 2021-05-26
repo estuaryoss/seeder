@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 func DoesFileExists(filename string) bool {
@@ -106,6 +107,22 @@ func DeleteFiles(fileNames []string) {
 			log.Printf(fmt.Sprintf("Failed to delete file: %s", fileName))
 		}
 	}
+}
+
+func ListFiles(dirPath string, supportedExtensions []string) []string {
+	var fileList []string
+	files, err := ioutil.ReadDir(dirPath)
+	for _, file := range files {
+		if strings.Contains(file.Name(), supportedExtensions[0]) || strings.Contains(file.Name(), supportedExtensions[1]) {
+			fileList = append(fileList, file.Name())
+		}
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return fileList
 }
 
 func RecreateFiles(fileNames []string) {

@@ -30,6 +30,5 @@ Usage: seeder destroy [options] id
 Scenarios: 
     Call it without arguments and it will erase all your remote state.
     Call it with args and destroy only the objects specified by 'id'.
-
 `
 }

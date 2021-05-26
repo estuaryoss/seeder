@@ -1,11 +1,11 @@
 package models
 
 type ServerDeployments struct {
-	Id          string   `json:"id,omitempty"`          //from deployer
-	Metadata    Metadata `json:"metadata,omitempty"`    //from deployer
-	Containers  []string `json:"containers,omitempty"`  //from deployer
-	IpPort      string   `json:"ip_port,omitempty"`     //from discovery
-	HomePageUrl string   `json:"homePageUrl,omitempty"` //from discovery
+	Id          string    `json:"id,omitempty"`          //from deployer
+	Metadata    XMetadata `json:"metadata,omitempty"`    //from deployer
+	Containers  []string  `json:"containers,omitempty"`  //from deployer
+	IpPort      string    `json:"ip_port,omitempty"`     //from discovery
+	HomePageUrl string    `json:"homePageUrl,omitempty"` //from discovery
 }
 
 func NewServerDeployments() *ServerDeployments {
@@ -21,11 +21,11 @@ func (deployments *ServerDeployments) SetId(id string) {
 	deployments.Id = id
 }
 
-func (deployments *ServerDeployments) GetMetadata() Metadata {
+func (deployments *ServerDeployments) GetMetadata() XMetadata {
 	return deployments.Metadata
 }
 
-func (deployments *ServerDeployments) SetMetadata(metadata Metadata) {
+func (deployments *ServerDeployments) SetMetadata(metadata XMetadata) {
 	deployments.Metadata = metadata
 }
 

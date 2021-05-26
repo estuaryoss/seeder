@@ -2,7 +2,10 @@ package factory
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/mitchellh/cli"
+	"log"
+	"seeder/models"
 )
 
 func Validate() (cli.Command, error) {
@@ -16,7 +19,20 @@ type validateCommandCLI struct {
 
 func (c *validateCommandCLI) Run(args []string) int {
 	c.Args = args
-	fmt.Println("validate")
+	fmt.Println("Validating configuration and deployments ...")
+
+	configHandler := models.ConfigHandler{Validate: validator.New()}
+	clientDeploymentHandler := models.ClientDeploymentHandler{Validate: validator.New()}
+
+	err := configHandler.ValidateConfig()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	err = clientDeploymentHandler.ValidateClientDeployments()
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 	return 0
 }
 
@@ -29,7 +45,8 @@ Usage: seeder validate
 - global config validation
 - deployment files validation
 
-  It only validates local files, but no objects found on the remote state.
+  It only validates local files, before being moved in the working directory.
+  The 'validate' operation does not perform any validation on remote objects/state.
 
 Call it before 'init'. Always.
 `

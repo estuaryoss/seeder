@@ -1,16 +1,38 @@
 package models
 
+import (
+	"fmt"
+	"github.com/go-playground/validator/v10"
+	"gopkg.in/yaml.v3"
+	"seeder/utils"
+)
+
 type YamlConfig struct {
-	DeployPolicy string   `yaml:"deploy_policy"`
-	AccessToken  string   `yaml:"access_token"`
-	Eureka       []string `yaml:"eureka"`
-	Discovery    []string `yaml:"discovery"`
-	Deployer     []string `yaml:"deployer"`
+	DeployPolicy string   `yaml:"deploy_policy" validate:"required,oneof=fill robin random"`
+	AccessToken  string   `yaml:"access_token" validate:"required,min=4"`
+	Eureka       []string `yaml:"eureka" validate:"required_without=discovery deployer,gt=0,dive,url"`
+	Discovery    []string `yaml:"discovery" validate:"required_without=eureka deployer,gt=0,dive,url"`
+	Deployer     []string `yaml:"deployer" validate:"required_without=eureka discovery,gt=0,dive,url"`
 }
 
-func NewYamlConfig() *YamlConfig {
-	config := &YamlConfig{}
-	return config
+type ConfigHandler struct {
+	Validate *validator.Validate
+}
+
+func (h ConfigHandler) ValidateConfig() error {
+	path := "config.yaml"
+
+	yamlConfig := YamlConfig{}
+
+	fileContent := utils.ReadFile(path)
+
+	err := yaml.Unmarshal(fileContent, &yamlConfig)
+
+	if err = h.Validate.Struct(yamlConfig); err != nil {
+		return err
+	}
+	fmt.Println("Validated config: " + path)
+	return nil
 }
 
 func (config *YamlConfig) GetDeployPolicy() string {

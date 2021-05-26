@@ -1,36 +1,36 @@
 package models
 
-type Metadata struct {
-	Replicas int                    `yaml:"replicas"`
-	Name     string                 `yaml:"name"`
-	Labels   map[string]interface{} `yaml:"labels"`
+type XMetadata struct {
+	Replicas int                    `yaml:"replicas,omitempty" validate:"required,min=0"`
+	Name     string                 `yaml:"name,omitempty" validate:"required,min=4"`
+	Labels   map[string]interface{} `yaml:"labels,omitempty" validate:"required,min=1"`
 }
 
-func NewMetadata() *Metadata {
-	metadata := &Metadata{}
-	return metadata
+func NewXMetadata() *XMetadata {
+	xmetadata := &XMetadata{}
+	return xmetadata
 }
 
-func (metadata *Metadata) GetReplicas() int {
+func (metadata *XMetadata) GetReplicas() int {
 	return metadata.Replicas
 }
 
-func (metadata *Metadata) SetReplicas(replicas int) {
+func (metadata *XMetadata) SetReplicas(replicas int) {
 	metadata.Replicas = replicas
 }
 
-func (metadata *Metadata) GetName() string {
+func (metadata *XMetadata) GetName() string {
 	return metadata.Name
 }
 
-func (metadata *Metadata) SetName(name string) {
+func (metadata *XMetadata) SetName(name string) {
 	metadata.Name = name
 }
 
-func (metadata *Metadata) GetLabels() map[string]interface{} {
+func (metadata *XMetadata) GetLabels() map[string]interface{} {
 	return metadata.Labels
 }
 
-func (metadata *Metadata) SetLabels(labels map[string]interface{}) {
+func (metadata *XMetadata) SetLabels(labels map[string]interface{}) {
 	metadata.Labels = labels
 }

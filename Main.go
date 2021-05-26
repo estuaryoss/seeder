@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"seeder/constants"
 	"seeder/factory"
@@ -23,10 +22,7 @@ func main() {
 		"version":  factory.Version,
 	}
 
-	exitStatus, err := c.Run()
-	if err != nil {
-		log.Println(err)
-	}
+	exitStatus, _ := c.Run()
 
 	os.Exit(exitStatus)
 }
