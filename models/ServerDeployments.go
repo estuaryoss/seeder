@@ -1,54 +1,54 @@
 package models
 
-type ServerDeployments struct {
-	Id          string    `json:"id,omitempty"`          //from deployer
-	Metadata    XMetadata `json:"metadata,omitempty"`    //from deployer
-	Containers  []string  `json:"containers,omitempty"`  //from deployer
-	IpPort      string    `json:"ip_port,omitempty"`     //from discovery
-	HomePageUrl string    `json:"homePageUrl,omitempty"` //from discovery
+type ServerDeployment struct {
+	Id          string     `json:"id,omitempty"`
+	Metadata    *XMetadata `json:"metadata,omitempty"`
+	Containers  []string   `json:"containers,omitempty"`
+	IpPort      string     `json:"ip_port,omitempty"`
+	HomePageUrl string     `json:"homePageUrl,omitempty"`
 }
 
-func NewServerDeployments() *ServerDeployments {
-	deployments := &ServerDeployments{}
+func NewServerDeployments() *ServerDeployment {
+	deployments := &ServerDeployment{}
 	return deployments
 }
 
-func (deployments *ServerDeployments) GetId() string {
+func (deployments *ServerDeployment) GetId() string {
 	return deployments.Id
 }
 
-func (deployments *ServerDeployments) SetId(id string) {
+func (deployments *ServerDeployment) SetId(id string) {
 	deployments.Id = id
 }
 
-func (deployments *ServerDeployments) GetMetadata() XMetadata {
+func (deployments *ServerDeployment) GetMetadata() *XMetadata {
 	return deployments.Metadata
 }
 
-func (deployments *ServerDeployments) SetMetadata(metadata XMetadata) {
+func (deployments *ServerDeployment) SetMetadata(metadata *XMetadata) {
 	deployments.Metadata = metadata
 }
 
-func (deployments *ServerDeployments) GetContainers() []string {
+func (deployments *ServerDeployment) GetContainers() []string {
 	return deployments.Containers
 }
 
-func (deployments *ServerDeployments) SetContainers(containers []string) {
+func (deployments *ServerDeployment) SetContainers(containers []string) {
 	deployments.Containers = containers
 }
 
-func (deployments *ServerDeployments) GetIpPort() string {
+func (deployments *ServerDeployment) GetIpPort() string {
 	return deployments.IpPort
 }
 
-func (deployments *ServerDeployments) SetIpPort(ipPort string) {
+func (deployments *ServerDeployment) SetIpPort(ipPort string) {
 	deployments.IpPort = ipPort
 }
 
-func (deployments *ServerDeployments) GetHomePageUrl() string {
+func (deployments *ServerDeployment) GetHomePageUrl() string {
 	return deployments.HomePageUrl
 }
 
-func (deployments *ServerDeployments) SetHomePageUrl(homePageUrl string) {
+func (deployments *ServerDeployment) SetHomePageUrl(homePageUrl string) {
 	deployments.HomePageUrl = homePageUrl
 }

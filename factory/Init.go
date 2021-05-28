@@ -3,6 +3,7 @@ package factory
 import (
 	"fmt"
 	"github.com/mitchellh/cli"
+	"seeder/constants"
 	"seeder/utils"
 )
 
@@ -16,25 +17,19 @@ type initCommandCLI struct {
 }
 
 func (c *initCommandCLI) Run(args []string) int {
-	workspace := "workspace"
-	deploymentsDirBeforeInit := "deployments"
-	deploymentsDirAfterInit := workspace + "/" + deploymentsDirBeforeInit
-	stateFile := workspace + "/" + "deployment_state.json"
-	planFile := workspace + "/" + "deployment_plan.json"
-
 	c.Args = args
 	fmt.Println("Initializing workspace ...")
-	utils.CreateDir(workspace)
-	utils.CreateDir(deploymentsDirAfterInit)
-	utils.CreateFileIfNotExist(planFile)
-	utils.CreateFileIfNotExist(stateFile)
+	utils.CreateDir(constants.WORKSPACE)
+	utils.CreateDir(constants.DEPLOYMENT_DIR_AFTER_INIT)
+	utils.CreateFileIfNotExist(constants.DEPLOYMENT_PLAN)
+	utils.CreateFileIfNotExist(constants.DEPLOYMENT_STATE)
 
 	supportedExtensions := []string{"yaml", "yml"}
-	filePaths := utils.ListFiles(deploymentsDirBeforeInit, supportedExtensions)
+	filePaths := utils.ListFiles(constants.DEPLOYMENTS_DIR_BEFORE_INIT, supportedExtensions)
 
 	for _, path := range filePaths {
-		fileContent := utils.ReadFile(deploymentsDirBeforeInit + "/" + path)
-		utils.WriteFile(deploymentsDirAfterInit+"/"+path, fileContent)
+		fileContent := utils.ReadFile(constants.DEPLOYMENTS_DIR_BEFORE_INIT + "/" + path)
+		utils.WriteFile(constants.DEPLOYMENT_DIR_AFTER_INIT+"/"+path, fileContent)
 	}
 
 	return 0

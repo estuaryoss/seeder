@@ -4,19 +4,38 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v3"
+	"log"
+	"seeder/constants"
 	"seeder/utils"
 )
 
 type YamlConfig struct {
 	DeployPolicy string   `yaml:"deploy_policy" validate:"required,oneof=fill robin random"`
 	AccessToken  string   `yaml:"access_token" validate:"required,min=4"`
-	Eureka       []string `yaml:"eureka" validate:"required_without=discovery deployer,gt=0,dive,url"`
-	Discovery    []string `yaml:"discovery" validate:"required_without=eureka deployer,gt=0,dive,url"`
-	Deployer     []string `yaml:"deployer" validate:"required_without=eureka discovery,gt=0,dive,url"`
+	Eureka       []string `yaml:"eureka" validate:"required_without_all=Discovery Deployer,dive,url"`
+	Discovery    []string `yaml:"discovery" validate:"required_without_all=Eureka Deployer,dive,url"`
+	Deployer     []string `yaml:"deployer" validate:"required_without_all=Eureka Discovery,dive,url"`
 }
 
 type ConfigHandler struct {
 	Validate *validator.Validate
+}
+
+func NewYamlConfig() *YamlConfig {
+	return &YamlConfig{}
+}
+
+func (config YamlConfig) GetYamlConfig() YamlConfig {
+	yamlConfig := YamlConfig{}
+
+	fileContent := utils.ReadFile(constants.CONFIG_YAML)
+
+	err := yaml.Unmarshal(fileContent, &yamlConfig)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	return yamlConfig
 }
 
 func (h ConfigHandler) ValidateConfig() error {
@@ -32,6 +51,7 @@ func (h ConfigHandler) ValidateConfig() error {
 		return err
 	}
 	fmt.Println("Validated config: " + path)
+
 	return nil
 }
 
@@ -51,7 +71,7 @@ func (config *YamlConfig) SetAccessToken(accessToken string) {
 	config.AccessToken = accessToken
 }
 
-func (config *YamlConfig) GetEureka() []string {
+func (config *YamlConfig) GetEurekas() []string {
 	return config.Eureka
 }
 
@@ -59,7 +79,7 @@ func (config *YamlConfig) SetEureka(eureka []string) {
 	config.Eureka = eureka
 }
 
-func (config *YamlConfig) GetDiscovery() []string {
+func (config *YamlConfig) GetDiscoveries() []string {
 	return config.Discovery
 }
 
@@ -67,7 +87,7 @@ func (config *YamlConfig) SetDiscovery(discovery []string) {
 	config.Discovery = discovery
 }
 
-func (config *YamlConfig) GetDeployer() []string {
+func (config *YamlConfig) GetDeployers() []string {
 	return config.Deployer
 }
 

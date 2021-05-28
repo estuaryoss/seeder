@@ -9,7 +9,7 @@ import (
 
 type ClientDeployment struct {
 	Version   string                 `yaml:"version" validate:"required,min=3"`
-	XMetadata XMetadata              `yaml:"x-metadata,omitempty" validate:"required"`
+	XMetadata *XMetadata             `yaml:"x-metadata,omitempty" validate:"required"`
 	Services  map[string]interface{} `yaml:"services" validate:"required,min=1"`
 }
 
@@ -21,11 +21,10 @@ func (h ClientDeploymentHandler) ValidateClientDeployments() error {
 	deploymentsDir := "deployments"
 	supportedExtensions := []string{"yaml", "yml"}
 
-	clientDeployment := &ClientDeployment{}
-
 	filePaths := utils.ListFiles(deploymentsDir, supportedExtensions)
 
 	for _, path := range filePaths {
+		clientDeployment := &ClientDeployment{}
 		fileContent := utils.ReadFile(deploymentsDir + "/" + path)
 		err := yaml.Unmarshal(fileContent, &clientDeployment)
 		if err = h.Validate.Struct(clientDeployment); err != nil {
@@ -50,11 +49,11 @@ func (deployment *ClientDeployment) SetVersion(version string) {
 	deployment.Version = version
 }
 
-func (deployment *ClientDeployment) GetMetadata() XMetadata {
+func (deployment *ClientDeployment) GetMetadata() *XMetadata {
 	return deployment.XMetadata
 }
 
-func (deployment *ClientDeployment) SetMetadata(metadata XMetadata) {
+func (deployment *ClientDeployment) SetMetadata(metadata *XMetadata) {
 	deployment.XMetadata = metadata
 }
 

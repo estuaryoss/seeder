@@ -1,9 +1,10 @@
 package models
 
 type XMetadata struct {
-	Replicas int                    `yaml:"replicas,omitempty" validate:"required,min=0"`
-	Name     string                 `yaml:"name,omitempty" validate:"required,min=4"`
-	Labels   map[string]interface{} `yaml:"labels,omitempty" validate:"required,min=1"`
+	Replicas int                    `yaml:"replicas,omitempty" json:"replicas,omitempty" validate:"required,min=1"`
+	Name     string                 `yaml:"name,omitempty" json:"name,omitempty" validate:"required,min=4"`
+	Labels   map[string]interface{} `yaml:"labels,omitempty" json:"labels,omitempty" validate:"required,min=1"`
+	File     string                 `yaml:"file,omitempty" json:"file,omitempty"`
 }
 
 func NewXMetadata() *XMetadata {

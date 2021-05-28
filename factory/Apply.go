@@ -26,7 +26,7 @@ func (c *applyCommandCLI) Help() string {
 Usage: seeder apply
 
     Applies a deployment plan. It will bring up all your deployments and sync the local plan with the remote state.
-It will run 'plan' action before, and prompt the user to accept it.
+It will run 'plan' action before, and prompt the user to accept it. It also updates your local plan 'deployment_plan.json'.
 
-Best practice is to call it after 'plan', before configuration is applied on remote.`
+Best practice is to call it after 'plan', before configuration is applied on remote for full awareness`
 }
