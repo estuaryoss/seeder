@@ -12,9 +12,9 @@ import (
 type YamlConfig struct {
 	DeployPolicy string   `yaml:"deploy_policy" validate:"required,oneof=fill robin random"`
 	AccessToken  string   `yaml:"access_token" validate:"required,min=4"`
-	Eureka       []string `yaml:"eureka" validate:"required_without_all=Discovery Deployer,dive,url"`
-	Discovery    []string `yaml:"discovery" validate:"required_without_all=Eureka Deployer,dive,url"`
-	Deployer     []string `yaml:"deployer" validate:"required_without_all=Eureka Discovery,dive,url"`
+	Eurekas      []string `yaml:"eureka" validate:"required_without_all=Discoveries Deployers,dive,url"`
+	Discoveries  []string `yaml:"discovery" validate:"required_without_all=Eurekas Deployers,dive,url"`
+	Deployers    []string `yaml:"deployer" validate:"required_without_all=Eurekas Discoveries,dive,url"`
 }
 
 type ConfigHandler struct {
@@ -28,7 +28,7 @@ func NewYamlConfig() *YamlConfig {
 func (config YamlConfig) GetYamlConfig() YamlConfig {
 	yamlConfig := YamlConfig{}
 
-	fileContent := utils.ReadFile(constants.CONFIG_YAML)
+	fileContent := utils.ReadFile(constants.CONFIG_YAML_AFTER_INIT)
 
 	err := yaml.Unmarshal(fileContent, &yamlConfig)
 	if err != nil {
@@ -39,7 +39,7 @@ func (config YamlConfig) GetYamlConfig() YamlConfig {
 }
 
 func (h ConfigHandler) ValidateConfig() error {
-	path := "config.yaml"
+	path := constants.CONFIG_YAML
 
 	yamlConfig := YamlConfig{}
 
@@ -72,25 +72,25 @@ func (config *YamlConfig) SetAccessToken(accessToken string) {
 }
 
 func (config *YamlConfig) GetEurekas() []string {
-	return config.Eureka
+	return config.Eurekas
 }
 
 func (config *YamlConfig) SetEureka(eureka []string) {
-	config.Eureka = eureka
+	config.Eurekas = eureka
 }
 
 func (config *YamlConfig) GetDiscoveries() []string {
-	return config.Discovery
+	return config.Discoveries
 }
 
 func (config *YamlConfig) SetDiscovery(discovery []string) {
-	config.Discovery = discovery
+	config.Discoveries = discovery
 }
 
 func (config *YamlConfig) GetDeployers() []string {
-	return config.Deployer
+	return config.Deployers
 }
 
 func (config *YamlConfig) SetDeployer(deployer []string) {
-	config.Deployer = deployer
+	config.Deployers = deployer
 }

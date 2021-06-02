@@ -1,6 +1,6 @@
 version: "3.3"
 x-metadata:
-  replicas: 15
+  replicas: 5
   name: alpine
   labels:
     k1: v1

@@ -68,10 +68,12 @@ func CreateFileIfNotExist(fileName string) {
 	if DoesFileExists(fileName) {
 		return
 	}
+	fmt.Println(fmt.Sprintf("Creating file %s", fileName))
 	emptyFile, err := os.Create(fileName)
 	if err != nil {
 		log.Printf(fmt.Sprintf("Failed to create empty file: %s", fileName))
 	}
+
 	emptyFile.Close()
 }
 
@@ -79,6 +81,7 @@ func CreateDir(dirName string) {
 	if _, err := os.Stat(dirName); !os.IsNotExist(err) {
 		return
 	}
+	fmt.Println(fmt.Sprintf("Creating dir %s", dirName))
 	err := os.Mkdir(dirName, 0644)
 	if err != nil {
 		log.Print(fmt.Sprintf("Failed creating dir: %s", dirName))
@@ -109,12 +112,16 @@ func DeleteFiles(fileNames []string) {
 	}
 }
 
-func ListFiles(dirPath string, supportedExtensions []string) []string {
+func ListFiles(dirPath string, supportedExtensions []string, prefixDir bool) []string {
 	var fileList []string
 	files, err := ioutil.ReadDir(dirPath)
 	for _, file := range files {
 		if strings.Contains(file.Name(), supportedExtensions[0]) || strings.Contains(file.Name(), supportedExtensions[1]) {
-			fileList = append(fileList, file.Name())
+			if prefixDir {
+				fileList = append(fileList, dirPath+string(os.PathSeparator)+file.Name())
+			} else {
+				fileList = append(fileList, file.Name())
+			}
 		}
 	}
 

@@ -4,7 +4,6 @@ type ServerDeployment struct {
 	Id          string     `json:"id,omitempty"`
 	Metadata    *XMetadata `json:"metadata,omitempty"`
 	Containers  []string   `json:"containers,omitempty"`
-	IpPort      string     `json:"ip_port,omitempty"`
 	HomePageUrl string     `json:"homePageUrl,omitempty"`
 }
 
@@ -35,14 +34,6 @@ func (deployments *ServerDeployment) GetContainers() []string {
 
 func (deployments *ServerDeployment) SetContainers(containers []string) {
 	deployments.Containers = containers
-}
-
-func (deployments *ServerDeployment) GetIpPort() string {
-	return deployments.IpPort
-}
-
-func (deployments *ServerDeployment) SetIpPort(ipPort string) {
-	deployments.IpPort = ipPort
 }
 
 func (deployments *ServerDeployment) GetHomePageUrl() string {

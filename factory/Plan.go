@@ -1,16 +1,17 @@
 package factory
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"github.com/mitchellh/cli"
+	"os"
+	"reflect"
 	"seeder/constants"
 	"seeder/models"
-	"seeder/services"
 	"seeder/tools"
 	"seeder/utils"
-	"sort"
+	"strings"
 )
 
 func Plan() (cli.Command, error) {
@@ -24,67 +25,55 @@ type planCommandCLI struct {
 
 func (c *planCommandCLI) Run(args []string) int {
 	c.Args = args
-	fmt.Println("Saving and printing the deployment plan ...")
-	configHandler := models.ConfigHandler{Validate: validator.New()}
-
-	err := configHandler.ValidateConfig()
-	if err != nil {
-		fmt.Println(err.Error())
-		return constants.FAILURE
-	}
-	yamlConfig := models.NewYamlConfig().GetYamlConfig()
-
-	eurekas := yamlConfig.GetEurekas()
-	discoveries := yamlConfig.GetDiscoveries()
-	var deployers []string
-
-	if eurekas != nil {
-		for _, eureka := range eurekas {
-			eureka_service := services.NewEurekaClient(eureka)
-			eureka_deployers := eureka_service.GetDeployers()
-			for _, deployer := range eureka_deployers {
-				deployers = append(deployers, deployer)
-			}
-		}
-	}
-
-	if discoveries != nil {
-		for _, discovery := range discoveries {
-			discovery_service := services.NewDiscoveryService(discovery, yamlConfig.GetAccessToken())
-			discovery_deployers := discovery_service.HttpClientGetDeployers()
-			if discovery_deployers.Description == nil {
-				fmt.Sprintf("Unable to get deployer apps from Discovery: %s",
-					fmt.Sprint(discovery))
-				continue
-			}
-			for _, deployer := range discovery_deployers.GetDescription().([]interface{}) {
-				deployerCast := deployer.(map[string]interface{})
-				deployers = append(deployers, deployerCast["homePageUrl"].(string))
-			}
-		}
-	}
-
-	if yamlConfig.GetDeployers() != nil {
-		deployers = yamlConfig.GetDeployers()
-	}
-	sort.Strings(deployers)
-
-	deploymentPlan := models.NewDeploymentPlan()
+	fmt.Println("Saving and printing the deployment newPlan ...")
+	deploymentPlanCreator := tools.NewDeploymentPlanCreator()
+	newPlan := deploymentPlanCreator.CreateDeploymentPlan()
 	deploymentPlanPrinter := tools.NewDeploymentPlanPrinter()
 	deploymentPlanPolicy := tools.NewDeploymentPlanPolicy()
-	plan := deploymentPlan.CreateDeploymentPlan()
-	deploymentPlanPolicy.ApplyPolicy(plan, deployers, yamlConfig)
 
-	jsonPlan, err := json.Marshal(plan)
+	jsonPlan, err := json.Marshal(newPlan)
 	if err != nil {
 		fmt.Println(err.Error())
 		return constants.FAILURE
 	}
-	utils.WriteFile(constants.DEPLOYMENT_PLAN, jsonPlan)
+	alreadySavedPlan := make([]*models.ServerDeployment, 0)
+	err = json.Unmarshal(utils.ReadFile(constants.DEPLOYMENT_PLAN), &alreadySavedPlan)
+	if err != nil {
+		fmt.Println(err.Error())
+		return constants.FAILURE
+	}
 
-	deploymentPlanPrinter.Print(plan)
+	if !reflect.DeepEqual(alreadySavedPlan, newPlan) {
+		deploymentPlanPrinter.PrintFromArray(newPlan)
 
-	deploymentPlanPolicy.PrintWarnings(plan)
+		fmt.Println(fmt.Sprintf("Current plan is different from the one found at '%s'. "+
+			"Do you want to save the current plan ? [yes/no] : ", constants.DEPLOYMENT_PLAN))
+		reader := bufio.NewReader(os.Stdin)
+		answer, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err.Error())
+			return constants.FAILURE
+		}
+		answer = strings.Replace(answer, "\n", "", -1)
+		if strings.Compare(answer, "yes") == 0 {
+			utils.WriteFile(constants.DEPLOYMENT_PLAN, jsonPlan)
+			fmt.Println(fmt.Sprintf("The current plan was saved at location:  %s.", constants.DEPLOYMENT_PLAN))
+		} else {
+			fmt.Println("The current plan was discarded.")
+		}
+	}
+
+	err = deploymentPlanPrinter.Print(constants.DEPLOYMENT_PLAN)
+	if err != nil {
+		fmt.Println(err.Error())
+		return constants.FAILURE
+	}
+
+	err = deploymentPlanPolicy.PrintWarnings(constants.DEPLOYMENT_PLAN)
+	if err != nil {
+		fmt.Println(err.Error())
+		return constants.FAILURE
+	}
 
 	return constants.SUCCESS
 }

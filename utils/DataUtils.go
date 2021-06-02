@@ -8,8 +8,8 @@ import (
 func GetKeysFromMap(myMap map[string]interface{}) []string {
 	keys := make([]string, 0, len(myMap))
 
-	for k, _ := range myMap {
-		keys = append(keys, k)
+	for key, _ := range myMap {
+		keys = append(keys, key)
 	}
 
 	return keys

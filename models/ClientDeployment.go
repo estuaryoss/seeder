@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v3"
+	"seeder/constants"
 	"seeder/utils"
 )
 
@@ -18,14 +19,14 @@ type ClientDeploymentHandler struct {
 }
 
 func (h ClientDeploymentHandler) ValidateClientDeployments() error {
-	deploymentsDir := "deployments"
+	deploymentsDir := constants.DEPLOYMENTS_DIR_BEFORE_INIT
 	supportedExtensions := []string{"yaml", "yml"}
 
-	filePaths := utils.ListFiles(deploymentsDir, supportedExtensions)
+	filePaths := utils.ListFiles(deploymentsDir, supportedExtensions, true)
 
 	for _, path := range filePaths {
 		clientDeployment := &ClientDeployment{}
-		fileContent := utils.ReadFile(deploymentsDir + "/" + path)
+		fileContent := utils.ReadFile(path)
 		err := yaml.Unmarshal(fileContent, &clientDeployment)
 		if err = h.Validate.Struct(clientDeployment); err != nil {
 			return err

@@ -36,17 +36,17 @@ func (e *Eureka) getApps(appName string) []eureka.Application {
 	return eurekaApplications
 }
 
-func (e *Eureka) GetDeployers() []string {
-	var deployers []string
-	var eurekaApplications = e.getApps("deployer")
+func (e *Eureka) GetDiscoveries() []string {
+	var discoveries []string
+	var eurekaApplications = e.getApps("discovery")
 
 	for _, app := range eurekaApplications {
 		for _, instanceInfo := range app.Instances {
-			deployers = append(deployers, instanceInfo.HomePageUrl)
+			discoveries = append(discoveries, instanceInfo.HomePageUrl)
 		}
 	}
 
-	return deployers
+	return discoveries
 }
 
 func GetEurekaClient(eurekaServer string) *eureka.Client {
