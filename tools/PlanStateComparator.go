@@ -59,7 +59,9 @@ func (planStateComparator *PlanStateComparator) isDeploymentFound(deployment *mo
 }
 
 func (planStateComparator *PlanStateComparator) isDeploymentEqual(plan *models.ServerDeployment, state *models.ServerDeployment) bool {
-	//TODO if one container goes down it must create a new one.
+	if len(plan.Containers) != len(state.Containers) {
+		plan.RecreateDeployment = true
+	}
 	if plan.Id == state.Id && planStateComparator.isMetadataEqual(plan.Metadata, state.Metadata) &&
 		len(plan.Containers) == len(state.Containers) {
 		return true

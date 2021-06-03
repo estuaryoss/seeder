@@ -105,8 +105,9 @@ func DeleteFile(fileName string) {
 		return
 	}
 	err := os.Remove(fileName)
+	fmt.Println(fmt.Sprintf("Deleting file %s", fileName))
 	if err != nil {
-		log.Printf(fmt.Sprintf("Failed to delete file: %s", fileName))
+		log.Println(fmt.Sprintf("Failed to delete file: %s", fileName))
 	}
 }
 
@@ -116,6 +117,13 @@ func DeleteFiles(fileNames []string) {
 		if err != nil {
 			log.Printf(fmt.Sprintf("Failed to delete file: %s", fileName))
 		}
+	}
+}
+
+func DeleteFilesFromDirectory(dirPath string) {
+	files := ListFiles(dirPath, []string{"yaml", "yml"}, true)
+	for _, filePath := range files {
+		DeleteFile(filePath)
 	}
 }
 

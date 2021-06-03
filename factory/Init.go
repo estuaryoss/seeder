@@ -3,6 +3,7 @@ package factory
 import (
 	"fmt"
 	"github.com/mitchellh/cli"
+	"os"
 	"seeder/constants"
 	"seeder/utils"
 )
@@ -28,6 +29,7 @@ func (c *initCommandCLI) Run(args []string) int {
 	fmt.Println("Initializing workspace ...")
 	utils.CreateDir(constants.WORKSPACE)
 	utils.CreateDir(constants.DEPLOYMENT_DIR_AFTER_INIT)
+	utils.DeleteFilesFromDirectory(constants.DEPLOYMENT_DIR_AFTER_INIT)
 	utils.CreateFileIfNotExistWithContent(constants.DEPLOYMENT_PLAN, []byte("[]"))
 	utils.CreateFileIfNotExistWithContent(constants.DEPLOYMENT_STATE, []byte("[]"))
 
@@ -35,8 +37,8 @@ func (c *initCommandCLI) Run(args []string) int {
 	filePaths := utils.ListFiles(constants.DEPLOYMENTS_DIR_BEFORE_INIT, supportedExtensions, false)
 
 	for _, path := range filePaths {
-		fileContent := utils.ReadFile(constants.DEPLOYMENTS_DIR_BEFORE_INIT + "/" + path)
-		utils.WriteFile(constants.DEPLOYMENT_DIR_AFTER_INIT+"/"+path, fileContent)
+		fileContent := utils.ReadFile(constants.DEPLOYMENTS_DIR_BEFORE_INIT + string(os.PathSeparator) + path)
+		utils.WriteFile(constants.DEPLOYMENT_DIR_AFTER_INIT+string(os.PathSeparator)+path, fileContent)
 	}
 	configYamlFileContent := utils.ReadFile(constants.CONFIG_YAML)
 	utils.WriteFile(constants.CONFIG_YAML_AFTER_INIT, configYamlFileContent)
