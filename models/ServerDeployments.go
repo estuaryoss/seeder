@@ -1,10 +1,12 @@
 package models
 
 type ServerDeployment struct {
-	Id          string     `json:"id,omitempty"`
-	Metadata    *XMetadata `json:"metadata,omitempty"`
-	Containers  []string   `json:"containers,omitempty"`
-	HomePageUrl string     `json:"homePageUrl,omitempty"`
+	Id                 string     `json:"id,omitempty"`
+	Metadata           *XMetadata `json:"metadata,omitempty"`
+	Containers         []string   `json:"containers,omitempty"`
+	HomePageUrl        string     `json:"homePageUrl,omitempty"`
+	OmitDeployment     bool       `json:"omitDeployment,omitempty"`
+	RecreateDeployment bool       `json:"recreateDeployment,omitempty"`
 }
 
 func NewServerDeployments() *ServerDeployment {

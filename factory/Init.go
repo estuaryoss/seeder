@@ -28,8 +28,8 @@ func (c *initCommandCLI) Run(args []string) int {
 	fmt.Println("Initializing workspace ...")
 	utils.CreateDir(constants.WORKSPACE)
 	utils.CreateDir(constants.DEPLOYMENT_DIR_AFTER_INIT)
-	utils.WriteFile(constants.DEPLOYMENT_PLAN, []byte("[]"))
-	utils.WriteFile(constants.DEPLOYMENT_STATE, []byte("[]"))
+	utils.CreateFileIfNotExistWithContent(constants.DEPLOYMENT_PLAN, []byte("[]"))
+	utils.CreateFileIfNotExistWithContent(constants.DEPLOYMENT_STATE, []byte("[]"))
 
 	supportedExtensions := []string{"yaml", "yml"}
 	filePaths := utils.ListFiles(constants.DEPLOYMENTS_DIR_BEFORE_INIT, supportedExtensions, false)

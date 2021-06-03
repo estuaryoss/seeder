@@ -66,7 +66,10 @@ func (service *DeployerService) HttpClientGetDeployments() *models.ApiResponse {
 		fmt.Print(err.Error())
 	}
 	apiResponse := &service.ApiResponse
-	json.Unmarshal(bodyBytes, apiResponse)
+	err = json.Unmarshal(bodyBytes, apiResponse)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
 
 	return service.ApiResponse
 }
@@ -90,7 +93,10 @@ func (service *DeployerService) HttpClientGetDeploymentId(id string) *models.Api
 		fmt.Print(err.Error())
 	}
 	apiResponse := &service.ApiResponse
-	json.Unmarshal(bodyBytes, apiResponse)
+	err = json.Unmarshal(bodyBytes, apiResponse)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
 
 	return service.ApiResponse
 }

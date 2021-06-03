@@ -68,3 +68,31 @@ func (service *DiscoveryService) HttpClientGetDeployers() *models.ApiResponse {
 
 	return service.ApiResponse
 }
+
+func (service *DiscoveryService) HttpClientGetDeploymentsUnicast(homePageUrl string) *models.ApiResponse {
+	req, err := http.NewRequest("GET", service.HomePageUrl+"/deployers/deployments", nil)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Token", service.AccessToken)
+	req.Header.Add("HomePageUrl", homePageUrl)
+	resp, err := service.HttpClient.Do(req)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	apiResponse := &service.ApiResponse
+	err = json.Unmarshal(bodyBytes, apiResponse)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+
+	return service.ApiResponse
+}

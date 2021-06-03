@@ -77,6 +77,13 @@ func CreateFileIfNotExist(fileName string) {
 	emptyFile.Close()
 }
 
+func CreateFileIfNotExistWithContent(fileName string, content []byte) {
+	if DoesFileExists(fileName) {
+		return
+	}
+	WriteFile(fileName, content)
+}
+
 func CreateDir(dirName string) {
 	if _, err := os.Stat(dirName); !os.IsNotExist(err) {
 		return
