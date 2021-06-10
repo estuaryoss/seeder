@@ -31,7 +31,7 @@ func (infraBuilder *InfrastructureBuilder) GetInfrastructureNodes() map[string][
 
 			for _, discovery := range eureka_discoveries {
 				discovery_service := services.NewDiscoveryService(discovery, yamlConfig.GetAccessToken())
-				discovery_deployers := discovery_service.HttpClientGetDeployers()
+				discovery_deployers := discovery_service.GetDeployers()
 				if discovery_deployers.Description == nil {
 					fmt.Sprintf("Unable to get deployer apps from Discoveries: %s",
 						fmt.Sprint(discovery))
@@ -51,7 +51,8 @@ func (infraBuilder *InfrastructureBuilder) GetInfrastructureNodes() map[string][
 	if discoveries != nil {
 		for _, discovery := range discoveries {
 			discovery_service := services.NewDiscoveryService(discovery, yamlConfig.GetAccessToken())
-			discovery_deployers := discovery_service.HttpClientGetDeployers()
+
+			discovery_deployers := discovery_service.GetDeployers()
 			if discovery_deployers.Description == nil {
 				fmt.Sprintf("Unable to get deployer apps from Discoveries: %s",
 					fmt.Sprint(discovery))

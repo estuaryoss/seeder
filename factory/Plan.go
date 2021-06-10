@@ -7,7 +7,6 @@ import (
 	"github.com/mitchellh/cli"
 	"github.com/thoas/go-funk"
 	"os"
-	"reflect"
 	"seeder/constants"
 	"seeder/models"
 	"seeder/tools"
@@ -46,9 +45,9 @@ func (c *planCommandCLI) Run(args []string) int {
 	}
 
 	deploymentPlanCreator := tools.NewDeploymentPlanCreator(remoteDeployments)
-	plan := deploymentPlanCreator.GetPlan()
 	plannedChanges := deploymentPlanCreator.GetPlannedChanges()
 	noChanges := deploymentPlanCreator.GetNoChanges()
+	plan := deploymentPlanCreator.GetPlan()
 
 	deploymentPlanPrinter := tools.NewDeploymentPlanPrinter()
 	deploymentPlanPolicy := tools.NewDeploymentPlanPolicy()
@@ -71,13 +70,14 @@ func (c *planCommandCLI) Run(args []string) int {
 		return constants.FAILURE
 	}
 
-	fmt.Println("No changes: ")
+	fmt.Println("Deployments already created: ")
 	deploymentPlanPrinter.PrintFromArray(noChanges)
 
-	fmt.Println("Proposed changes: ")
+	fmt.Println("Deployments to be (re)/created: ")
 	deploymentPlanPrinter.PrintFromArray(plannedChanges)
+	planComparator := tools.NewPlanComparator(alreadySavedPlan, plan)
 
-	if !reflect.DeepEqual(alreadySavedPlan, plan) {
+	if len(planComparator.GetChanges()) != 0 {
 		fmt.Println(fmt.Sprintf("Current plan is different from the one found at '%s'. "+
 			"Do you want to save the current plan ? [yes/no] : ", constants.DEPLOYMENT_PLAN))
 		reader := bufio.NewReader(os.Stdin)

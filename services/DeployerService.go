@@ -131,14 +131,15 @@ func (service *DeployerService) HttpClientGetEnvInit() *models.ApiResponse {
 	return service.ApiResponse
 }
 
-func (service *DeployerService) HttpClientPostDeployments(body []byte) *models.ApiResponse {
-	req, err := http.NewRequest("POST", service.HomePageUrl+"/deployments", bytes.NewBuffer(body))
+func (service *DeployerService) PostDeployment(deployment *models.ServerDeployment, deploymentFileContent []byte) *models.ApiResponse {
+	req, err := http.NewRequest("POST", service.HomePageUrl+"/deployments", bytes.NewBuffer(deploymentFileContent))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Token", service.AccessToken)
+	req.Header.Add("Deployment-Id", deployment.Id)
 	resp, err := service.HttpClient.Do(req)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -155,7 +156,7 @@ func (service *DeployerService) HttpClientPostDeployments(body []byte) *models.A
 	return service.ApiResponse
 }
 
-func (service *DeployerService) HttpClientDeleteDeployments() *models.ApiResponse {
+func (service *DeployerService) DeleteDeployments() *models.ApiResponse {
 	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployments", nil)
 	if err != nil {
 		fmt.Print(err.Error())
@@ -179,8 +180,8 @@ func (service *DeployerService) HttpClientDeleteDeployments() *models.ApiRespons
 	return service.ApiResponse
 }
 
-func (service *DeployerService) HttpClientDeleteDeploymentId(id string) *models.ApiResponse {
-	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployments/"+id, nil)
+func (service *DeployerService) DeleteDeploymentId(deployment *models.ServerDeployment) *models.ApiResponse {
+	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployments/"+deployment.Id, nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}

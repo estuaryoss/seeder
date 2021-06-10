@@ -24,7 +24,6 @@ func NewPlanStateComparator(plan []*models.ServerDeployment, state []*models.Ser
 func (planStateComparator *PlanStateComparator) GetPlannedChanges() []*models.ServerDeployment {
 	for _, planDeployment := range planStateComparator.PlanDeployments {
 		if !planStateComparator.isDeploymentFound(planDeployment) {
-			planDeployment.OmitDeployment = false
 			planStateComparator.PlannedChanges = append(planStateComparator.PlannedChanges, planDeployment)
 		}
 	}
@@ -35,7 +34,6 @@ func (planStateComparator *PlanStateComparator) GetPlannedChanges() []*models.Se
 func (planStateComparator *PlanStateComparator) GetNoChanges() []*models.ServerDeployment {
 	for _, planDeployment := range planStateComparator.PlanDeployments {
 		if planStateComparator.isDeploymentFound(planDeployment) {
-			planDeployment.OmitDeployment = true
 			planStateComparator.NoChanges = append(planStateComparator.NoChanges, planDeployment)
 		}
 	}
@@ -48,9 +46,14 @@ func (planStateComparator *PlanStateComparator) GetPlan() []*models.ServerDeploy
 }
 
 func (planStateComparator *PlanStateComparator) isDeploymentFound(deployment *models.ServerDeployment) bool {
+	deployment.RecreateDeployment = true
+
 	for _, stateDeployment := range planStateComparator.StateDeployments {
 		if planStateComparator.isDeploymentEqual(deployment, stateDeployment) {
-			deployment.HomePageUrl = stateDeployment.HomePageUrl
+			deployment.Deployer = stateDeployment.Deployer
+			deployment.Discovery = stateDeployment.Discovery
+			deployment.RecreateDeployment = false
+
 			return true
 		}
 	}
@@ -71,8 +74,7 @@ func (planStateComparator *PlanStateComparator) isDeploymentEqual(plan *models.S
 }
 
 func (planStateComparator *PlanStateComparator) isMetadataEqual(planMetadata *models.XMetadata, stateMetadata *models.XMetadata) bool {
-	if planMetadata.File == stateMetadata.File &&
-		planMetadata.Name == stateMetadata.Name &&
+	if planMetadata.Name == stateMetadata.Name &&
 		reflect.DeepEqual(planMetadata.Labels, stateMetadata.Labels) {
 
 		return true

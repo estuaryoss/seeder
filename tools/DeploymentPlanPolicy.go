@@ -27,14 +27,26 @@ func (deploymentPlanPrinter *DeploymentPlanPolicy) ApplyPolicy(plan []*models.Se
 		sort.Strings(deployers)
 	}
 
-	var deployerServices []*services.DeployerService
-	availableSlots := map[string]int{}
+	yamlConfig := models.NewYamlConfig().GetYamlConfig()
+	availableSlots := models.NewDiscoveryDeployerPair().GetDiscoveryDeployerPair()
 
-	for _, deployers := range discoveriesMapDeployers {
-		for _, deployer := range deployers {
-			deployerService := services.NewDeployerService(deployer, deploymentPlanPrinter.YamlConfig.AccessToken)
-			deployerServices = append(deployerServices, deployerService)
-			availableSlots[deployerService.HomePageUrl] = deployerService.HttpClientGetRemainingSlots()
+	for discoveryHomePageUrl, deployers := range discoveriesMapDeployers {
+		if discoveryHomePageUrl != constants.NA {
+			//access the deployers through discovery(ies)
+			discoveryService := services.NewDiscoveryService(discoveryHomePageUrl, yamlConfig.GetAccessToken())
+			for _, deployerHomePageUrl := range deployers {
+				deployerSlots := make(map[string]int, 0)
+				deployerSlots[deployerHomePageUrl] = discoveryService.GetRemainingSlots(deployerHomePageUrl)
+				availableSlots[discoveryHomePageUrl] = deployerSlots
+			}
+		} else {
+			//access directly the deployers
+			for _, deployerHomePageUrl := range deployers {
+				deployerService := services.NewDeployerService(deployerHomePageUrl, deploymentPlanPrinter.YamlConfig.AccessToken)
+				deployerSlots := make(map[string]int, 0)
+				deployerSlots[deployerHomePageUrl] = deployerService.HttpClientGetRemainingSlots()
+				availableSlots[constants.NA] = deployerSlots
+			}
 		}
 	}
 
@@ -51,15 +63,21 @@ func (deploymentPlanPrinter *DeploymentPlanPolicy) ApplyPolicy(plan []*models.Se
 	}
 }
 
-func fill(plan []*models.ServerDeployment, deployersSlots map[string]int) {
+func fill(plan []*models.ServerDeployment, discoveryDeployerSlots map[string]map[string]int) {
 	slotIndex := 0
-	for deployerHomeUrl, noSlots := range deployersSlots {
-		for i := 0; i < noSlots; i++ {
-			plan[slotIndex].HomePageUrl = deployerHomeUrl
-			if slotIndex == len(plan)-1 {
-				break
+	if len(plan) == 0 { //in case already deployed
+		return
+	}
+	for discoveryHomePageUrl, deployerSlots := range discoveryDeployerSlots {
+		for deployerHomeUrl, noSlots := range deployerSlots {
+			for i := 0; i < noSlots; i++ {
+				plan[slotIndex].Discovery = discoveryHomePageUrl
+				plan[slotIndex].Deployer = deployerHomeUrl
+				if slotIndex == len(plan)-1 {
+					break
+				}
+				slotIndex++
 			}
-			slotIndex++
 		}
 		if slotIndex == len(plan)-1 {
 			break
@@ -67,20 +85,22 @@ func fill(plan []*models.ServerDeployment, deployersSlots map[string]int) {
 	}
 }
 
-func robin(plan []*models.ServerDeployment, deployersSlots map[string]int) {
+func robin(plan []*models.ServerDeployment, discoveryDeployerSlots map[string]map[string]int) {
 	slotIndex := 0
-	deployers := utils.GetKeysFromMapInt(deployersSlots)
-
-	for _, noSlots := range deployersSlots {
-		for i := 0; i < noSlots; i++ {
-			plan[slotIndex].HomePageUrl = deployers[slotIndex%len(deployers)]
+	for discoveryHomePageUrl, deployerSlots := range discoveryDeployerSlots {
+		deployers := utils.GetKeysFromMapInt(deployerSlots)
+		for _, noSlots := range deployerSlots {
+			for i := 0; i < noSlots; i++ {
+				plan[slotIndex].Discovery = discoveryHomePageUrl
+				plan[slotIndex].Deployer = deployers[slotIndex%len(deployers)]
+				if slotIndex == len(plan)-1 {
+					break
+				}
+				slotIndex++
+			}
 			if slotIndex == len(plan)-1 {
 				break
 			}
-			slotIndex++
-		}
-		if slotIndex == len(plan)-1 {
-			break
 		}
 	}
 }
@@ -102,5 +122,5 @@ func (deploymentPlanPrinter *DeploymentPlanPolicy) PrintWarnings(planFilePath st
 }
 
 func doesNotHaveHomePageUrl(deployment *models.ServerDeployment) bool {
-	return deployment.HomePageUrl == ""
+	return deployment.Deployer == ""
 }

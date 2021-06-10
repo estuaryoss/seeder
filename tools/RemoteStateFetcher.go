@@ -23,33 +23,34 @@ func (remoteStateFetcher *RemoteStateFetcher) GetDeployments() []interface{} {
 			//access the deployers through discovery(ies)
 			discoveryService := services.NewDiscoveryService(discoveryHomePageUrl, yamlConfig.GetAccessToken())
 			for _, deployerHomePageUrl := range deployers {
-				discoveryDeployments := discoveryService.HttpClientGetDeploymentsUnicast(deployerHomePageUrl).GetDescription().([]interface{})
-				remoteStateFetcher.appendDiscoveryDeployments(deployerHomePageUrl, discoveryDeployments)
+				discoveryDeployments := discoveryService.GetDeploymentUnicast(deployerHomePageUrl).GetDescription().([]interface{})
+				remoteStateFetcher.appendDiscoveryDeployments(discoveryHomePageUrl, deployerHomePageUrl, discoveryDeployments)
 			}
 		} else {
 			//access directly the deployers
 			for _, deployerHomePageUrl := range deployers {
 				deployerService := services.NewDeployerService(deployerHomePageUrl, yamlConfig.GetAccessToken())
 				deployerDeployments := deployerService.HttpClientGetDeployments().GetDescription().([]interface{})
-				remoteStateFetcher.appendDeployments(deployerHomePageUrl, deployerDeployments)
+				remoteStateFetcher.appendDeployments(discoveryHomePageUrl, deployerHomePageUrl, deployerDeployments)
 			}
 		}
 	}
 	return remoteStateFetcher.Deployments
 }
 
-func (remoteStateFetcher *RemoteStateFetcher) appendDeployments(deployerHomePageUrl string, deployments []interface{}) {
+func (remoteStateFetcher *RemoteStateFetcher) appendDeployments(discoveryHomePageUrl string, deployerHomePageUrl string, deployments []interface{}) {
 	for _, deployment := range deployments {
 		deploymentEnriched := deployment.(map[string]interface{})
-		deploymentEnriched["homePageUrl"] = deployerHomePageUrl
+		deploymentEnriched["deployer"] = deployerHomePageUrl
+		deploymentEnriched["discovery"] = discoveryHomePageUrl
 		remoteStateFetcher.Deployments = append(remoteStateFetcher.Deployments, deploymentEnriched)
 	}
 }
 
-func (remoteStateFetcher *RemoteStateFetcher) appendDiscoveryDeployments(deployerHomePageUrl string,
+func (remoteStateFetcher *RemoteStateFetcher) appendDiscoveryDeployments(discoveryHomePageUrl string, deployerHomePageUrl string,
 	discoveryDeployments []interface{}) {
 	for _, discoveryDeployment := range discoveryDeployments {
 		deployerDeployments := discoveryDeployment.(map[string]interface{})["description"].([]interface{})
-		remoteStateFetcher.appendDeployments(deployerHomePageUrl, deployerDeployments)
+		remoteStateFetcher.appendDeployments(discoveryHomePageUrl, deployerHomePageUrl, deployerDeployments)
 	}
 }

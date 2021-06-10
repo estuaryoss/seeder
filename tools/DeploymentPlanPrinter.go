@@ -28,7 +28,7 @@ func (deploymentPlanPrinter *DeploymentPlanPrinter) Print(planFilePath string) e
 	t.AppendHeader(table.Row{"#", "Id", "Deployer(s)", "Container(s)", "Metadata", "Local File"})
 	for index, serverDeployment := range plan {
 		metadata, _ := json.Marshal(serverDeployment.Metadata)
-		t.AppendRow([]interface{}{index, serverDeployment.Id, serverDeployment.HomePageUrl, serverDeployment.Containers,
+		t.AppendRow([]interface{}{index, serverDeployment.Id, serverDeployment.Deployer, serverDeployment.Containers,
 			string(metadata), serverDeployment.Metadata.File})
 	}
 	t.Render()
@@ -42,7 +42,7 @@ func (deploymentPlanPrinter *DeploymentPlanPrinter) PrintFromArray(plan []*model
 	t.AppendHeader(table.Row{"#", "Id", "Deployer(s)", "Container(s)", "Metadata", "Local File"})
 	for index, serverDeployment := range plan {
 		metadata, _ := json.Marshal(serverDeployment.Metadata)
-		t.AppendRow([]interface{}{index, serverDeployment.Id, serverDeployment.HomePageUrl, serverDeployment.Containers,
+		t.AppendRow([]interface{}{index, serverDeployment.Id, serverDeployment.Deployer, serverDeployment.Containers,
 			string(metadata), serverDeployment.Metadata.File})
 	}
 	t.Render()

@@ -31,6 +31,7 @@ func (deploymentPlanCreator *DeploymentPlanCreator) GetPlannedChanges() []*model
 
 func (deploymentPlanCreator *DeploymentPlanCreator) GetNoChanges() []*models.ServerDeployment {
 	planStateComparator := NewPlanStateComparator(deploymentPlanCreator.PlanDeployments, deploymentPlanCreator.RemoteDeployments)
+
 	return planStateComparator.GetNoChanges()
 }
 

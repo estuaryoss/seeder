@@ -4,8 +4,8 @@ type ServerDeployment struct {
 	Id                 string     `json:"id,omitempty"`
 	Metadata           *XMetadata `json:"metadata,omitempty"`
 	Containers         []string   `json:"containers,omitempty"`
-	HomePageUrl        string     `json:"homePageUrl,omitempty"`
-	OmitDeployment     bool       `json:"omitDeployment,omitempty"`
+	Discovery          string     `json:"discovery,omitempty"`
+	Deployer           string     `json:"deployer,omitempty"`
 	RecreateDeployment bool       `json:"recreateDeployment,omitempty"`
 }
 
@@ -38,10 +38,18 @@ func (deployments *ServerDeployment) SetContainers(containers []string) {
 	deployments.Containers = containers
 }
 
-func (deployments *ServerDeployment) GetHomePageUrl() string {
-	return deployments.HomePageUrl
+func (deployments *ServerDeployment) GetDeployer() string {
+	return deployments.Deployer
 }
 
-func (deployments *ServerDeployment) SetHomePageUrl(homePageUrl string) {
-	deployments.HomePageUrl = homePageUrl
+func (deployments *ServerDeployment) SetDeployer(deployer string) {
+	deployments.Deployer = deployer
+}
+
+func (deployments *ServerDeployment) GetDiscovery() string {
+	return deployments.Discovery
+}
+
+func (deployments *ServerDeployment) SetDiscovery(discovery string) {
+	deployments.Discovery = discovery
 }
