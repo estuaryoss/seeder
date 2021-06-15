@@ -18,7 +18,7 @@ The precedence is (from weaker to stronger):
 
 `eureka << discovery << deployers`
 
-## Deployer CLI
+## Seeder CLI
 
 Examples:
 
