@@ -3,7 +3,6 @@ package services
 import (
 	"fmt"
 	"github.com/ArthurHlt/go-eureka-client/eureka"
-	"log"
 	"strings"
 )
 
@@ -24,17 +23,30 @@ func (e *Eureka) getApps(appName string) []eureka.Application {
 
 	apps, err := e.client.GetApplications()
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Unable to get apps from EurekaServer: %s",
-			fmt.Sprint(e.client.GetCluster())))
+		fmt.Sprintf("Unable to get apps from EurekaServer: %s",
+			fmt.Sprint(e.client.GetCluster()))
 	}
 
 	for _, app := range apps.Applications {
-		if strings.Contains(app.Name, appName) {
+		if strings.Contains(strings.ToLower(app.Name), appName) {
 			eurekaApplications = append(eurekaApplications, app)
 		}
 	}
 
 	return eurekaApplications
+}
+
+func (e *Eureka) GetDiscoveries() []string {
+	var discoveries []string
+	var eurekaApplications = e.getApps("discovery")
+
+	for _, app := range eurekaApplications {
+		for _, instanceInfo := range app.Instances {
+			discoveries = append(discoveries, instanceInfo.HomePageUrl)
+		}
+	}
+
+	return discoveries
 }
 
 func GetEurekaClient(eurekaServer string) *eureka.Client {

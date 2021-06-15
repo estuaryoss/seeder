@@ -1,29 +1,28 @@
 package main
 
 import (
-	"log"
 	"os"
+	"seeder/constants"
 	"seeder/factory"
 
 	"github.com/mitchellh/cli"
 )
 
 func main() {
-	c := cli.NewCLI("seeder", "1.0.0")
+	c := cli.NewCLI(constants.APP_NAME, constants.APP_VERSION)
 	c.Args = os.Args[1:]
 
 	c.Commands = map[string]cli.CommandFactory{
-		"init":     factory.Init,
 		"validate": factory.Validate,
+		"init":     factory.Init,
 		"plan":     factory.Plan,
 		"apply":    factory.Apply,
+		"show":     factory.Plan,
 		"destroy":  factory.Destroy,
+		"version":  factory.Version,
 	}
 
-	exitStatus, err := c.Run()
-	if err != nil {
-		log.Println(err)
-	}
+	exitStatus, _ := c.Run()
 
 	os.Exit(exitStatus)
 }

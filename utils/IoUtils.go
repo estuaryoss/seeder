@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 func DoesFileExists(filename string) bool {
@@ -67,17 +68,27 @@ func CreateFileIfNotExist(fileName string) {
 	if DoesFileExists(fileName) {
 		return
 	}
+	fmt.Println(fmt.Sprintf("Creating file %s", fileName))
 	emptyFile, err := os.Create(fileName)
 	if err != nil {
 		log.Printf(fmt.Sprintf("Failed to create empty file: %s", fileName))
 	}
+
 	emptyFile.Close()
+}
+
+func CreateFileIfNotExistWithContent(fileName string, content []byte) {
+	if DoesFileExists(fileName) {
+		return
+	}
+	WriteFile(fileName, content)
 }
 
 func CreateDir(dirName string) {
 	if _, err := os.Stat(dirName); !os.IsNotExist(err) {
 		return
 	}
+	fmt.Println(fmt.Sprintf("Creating dir %s", dirName))
 	err := os.Mkdir(dirName, 0644)
 	if err != nil {
 		log.Print(fmt.Sprintf("Failed creating dir: %s", dirName))
@@ -94,8 +105,9 @@ func DeleteFile(fileName string) {
 		return
 	}
 	err := os.Remove(fileName)
+	fmt.Println(fmt.Sprintf("Deleting file %s", fileName))
 	if err != nil {
-		log.Printf(fmt.Sprintf("Failed to delete file: %s", fileName))
+		log.Println(fmt.Sprintf("Failed to delete file: %s", fileName))
 	}
 }
 
@@ -106,6 +118,33 @@ func DeleteFiles(fileNames []string) {
 			log.Printf(fmt.Sprintf("Failed to delete file: %s", fileName))
 		}
 	}
+}
+
+func DeleteFilesFromDirectory(dirPath string) {
+	files := ListFiles(dirPath, []string{"yaml", "yml"}, true)
+	for _, filePath := range files {
+		DeleteFile(filePath)
+	}
+}
+
+func ListFiles(dirPath string, supportedExtensions []string, prefixDir bool) []string {
+	var fileList []string
+	files, err := ioutil.ReadDir(dirPath)
+	for _, file := range files {
+		if strings.Contains(file.Name(), supportedExtensions[0]) || strings.Contains(file.Name(), supportedExtensions[1]) {
+			if prefixDir {
+				fileList = append(fileList, dirPath+string(os.PathSeparator)+file.Name())
+			} else {
+				fileList = append(fileList, file.Name())
+			}
+		}
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return fileList
 }
 
 func RecreateFiles(fileNames []string) {
