@@ -49,9 +49,10 @@ func (planStateComparator *PlanStateComparator) isDeploymentFound(deployment *mo
 	deployment.RecreateDeployment = true
 
 	for _, stateDeployment := range planStateComparator.StateDeployments {
+		deployment.Deployer = stateDeployment.Deployer
+		deployment.Discovery = stateDeployment.Discovery
+
 		if planStateComparator.isDeploymentEqual(deployment, stateDeployment) {
-			deployment.Deployer = stateDeployment.Deployer
-			deployment.Discovery = stateDeployment.Discovery
 			deployment.RecreateDeployment = false
 
 			return true

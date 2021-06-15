@@ -7,6 +7,7 @@ import (
 	"seeder/constants"
 	"seeder/models"
 	"seeder/services"
+	"seeder/tools"
 	"seeder/utils"
 	"time"
 )
@@ -34,12 +35,20 @@ func (c *destroyCommandCLI) Run(args []string) int {
 	}
 
 	//enter check loop
-	for plannedDeployments := getPlannedDeployments(); len(plannedDeployments) != 0; {
-		fmt.Println("Waiting for all deployments to be destroyed ...")
-		destroy(yamlConfig, plannedDeployments)
+	for {
 		saveRemoteState()
-		time.Sleep(30 * time.Second)
+		noChanges := getNoChanges()
+		destroy(yamlConfig, noChanges)
+		savePlan()
+		if len(noChanges) == len(plannedDeployments) {
+			break
+		}
+		fmt.Println("Waiting ...")
+		time.Sleep(10 * time.Second)
 	}
+
+	//save state
+	saveRemoteState()
 
 	//save plan
 	plan := getPlan()
@@ -55,9 +64,6 @@ func (c *destroyCommandCLI) Run(args []string) int {
 
 func destroy(yamlConfig models.YamlConfig, plannedDeployments []*models.ServerDeployment) {
 	for _, deployment := range plannedDeployments {
-		if deployment.RecreateDeployment == false {
-			continue
-		}
 		if deployment.Discovery != constants.NA {
 			discoveryService := services.NewDiscoveryService(deployment.Discovery, yamlConfig.GetAccessToken())
 			discoveryService.DeleteDeploymentId(deployment)
@@ -68,10 +74,21 @@ func destroy(yamlConfig models.YamlConfig, plannedDeployments []*models.ServerDe
 	}
 }
 
+func getNoChanges() []*models.ServerDeployment {
+	remoteDeployments := make([]*models.ServerDeployment, 0)
+	err := json.Unmarshal(utils.ReadFile(constants.DEPLOYMENT_STATE), &remoteDeployments)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	deploymentPlanCreator := tools.NewDeploymentPlanCreator(remoteDeployments)
+
+	return deploymentPlanCreator.GetNoChanges()
+}
+
 func (c *destroyCommandCLI) Synopsis() string { return "Usage: seeder destroy" }
 func (c *destroyCommandCLI) Help() string {
 	return `
-Usage: seeder destroy [options] id
+Usage: seeder destroy
 
     Destroys the remote state and empties your local plan.
 
@@ -79,7 +96,8 @@ Scenarios:
     Call it without arguments and it will erase all your remote state.
     Call it with args and destroy only the objects specified by 'id'.
 
-At the end of this action:
-- new plan will be saved with all the deployments marked for deployment
+After all deployments are destroyed:
+- it will save a new plan where the deployments are marked for deployment.
+- it will save a new remote state with remaining remote deployments.
 `
 }

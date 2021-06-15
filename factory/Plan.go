@@ -120,5 +120,7 @@ Options:
   -auto-approve          Skip interactive approval of plan before applying.
 
 Call it after 'init'. Always.
+
+It can be used also to detect leeway between local plan and remote state. Can be called with 'show' action as well.
 `
 }

@@ -48,7 +48,7 @@ func (service *DeployerService) GetHttpClient() *http.Client {
 }
 
 func (service *DeployerService) HttpClientGetDeployments() *models.ApiResponse {
-	req, err := http.NewRequest("GET", service.HomePageUrl+"/deployments", nil)
+	req, err := http.NewRequest("GET", service.HomePageUrl+"deployments", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -75,7 +75,7 @@ func (service *DeployerService) HttpClientGetDeployments() *models.ApiResponse {
 }
 
 func (service *DeployerService) HttpClientGetDeploymentId(id string) *models.ApiResponse {
-	req, err := http.NewRequest("GET", service.HomePageUrl+"/deployments/"+id, nil)
+	req, err := http.NewRequest("GET", service.HomePageUrl+"deployments/"+id, nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -108,7 +108,7 @@ func (service *DeployerService) HttpClientGetRemainingSlots() int {
 }
 
 func (service *DeployerService) HttpClientGetEnvInit() *models.ApiResponse {
-	req, err := http.NewRequest("GET", service.HomePageUrl+"/envinit", nil)
+	req, err := http.NewRequest("GET", service.HomePageUrl+"envinit", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -132,7 +132,7 @@ func (service *DeployerService) HttpClientGetEnvInit() *models.ApiResponse {
 }
 
 func (service *DeployerService) PostDeployment(deployment *models.ServerDeployment, deploymentFileContent []byte) *models.ApiResponse {
-	req, err := http.NewRequest("POST", service.HomePageUrl+"/deployments", bytes.NewBuffer(deploymentFileContent))
+	req, err := http.NewRequest("POST", service.HomePageUrl+"deployments", bytes.NewBuffer(deploymentFileContent))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -157,7 +157,7 @@ func (service *DeployerService) PostDeployment(deployment *models.ServerDeployme
 }
 
 func (service *DeployerService) DeleteDeployments() *models.ApiResponse {
-	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployments", nil)
+	req, err := http.NewRequest("DELETE", service.HomePageUrl+"deployments", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -181,7 +181,7 @@ func (service *DeployerService) DeleteDeployments() *models.ApiResponse {
 }
 
 func (service *DeployerService) DeleteDeploymentId(deployment *models.ServerDeployment) *models.ApiResponse {
-	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployments/"+deployment.Id, nil)
+	req, err := http.NewRequest("DELETE", service.HomePageUrl+"deployments/"+deployment.Id, nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}

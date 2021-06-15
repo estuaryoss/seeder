@@ -36,23 +36,34 @@ func (c *applyCommandCLI) Run(args []string) int {
 	}
 
 	//enter check loop
-	for plannedDeployments := getPlannedDeployments(); len(plannedDeployments) != 0; {
-		fmt.Println("Waiting for all deployments to be up and running ...")
-		deploy(yamlConfig, plannedDeployments)
+	for {
 		saveRemoteState()
+		pDeployments := getPlannedChanges()
+		deploy(yamlConfig, pDeployments)
+		savePlan()
+		if len(pDeployments) == 0 {
+			break
+		}
+		fmt.Println("Waiting ...")
 		time.Sleep(30 * time.Second)
 	}
 
+	//save state
+	saveRemoteState()
+
 	//save plan
+	savePlan()
+
+	return 0
+}
+
+func savePlan() {
 	plan := getPlan()
 	jsonPlan, err := json.Marshal(plan)
 	if err != nil {
 		fmt.Println(err.Error())
-		return constants.FAILURE
 	}
 	utils.WriteFile(constants.DEPLOYMENT_PLAN, jsonPlan)
-
-	return 0
 }
 
 func deploy(yamlConfig models.YamlConfig, plannedDeployments []*models.ServerDeployment) {
@@ -74,13 +85,14 @@ func deploy(yamlConfig models.YamlConfig, plannedDeployments []*models.ServerDep
 	}
 }
 
-func getPlannedDeployments() []*models.ServerDeployment {
+func getPlannedChanges() []*models.ServerDeployment {
 	remoteDeployments := make([]*models.ServerDeployment, 0)
 	err := json.Unmarshal(utils.ReadFile(constants.DEPLOYMENT_STATE), &remoteDeployments)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	deploymentPlanCreator := tools.NewDeploymentPlanCreator(remoteDeployments)
+
 	return deploymentPlanCreator.GetPlannedChanges()
 }
 
@@ -91,6 +103,7 @@ func getPlan() []*models.ServerDeployment {
 		fmt.Println(err.Error())
 	}
 	deploymentPlanCreator := tools.NewDeploymentPlanCreator(remoteDeployments)
+
 	return deploymentPlanCreator.GetPlan()
 }
 

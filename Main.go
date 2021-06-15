@@ -17,7 +17,7 @@ func main() {
 		"init":     factory.Init,
 		"plan":     factory.Plan,
 		"apply":    factory.Apply,
-		"show":     factory.Show,
+		"show":     factory.Plan,
 		"destroy":  factory.Destroy,
 		"version":  factory.Version,
 	}

@@ -85,7 +85,7 @@ func (service *DiscoveryService) GetRemainingSlots(deployerHomePageUrl string) i
 }
 
 func (service *DiscoveryService) GetEnvInit(deployerHomePageUrl string) *models.ApiResponse {
-	req, err := http.NewRequest("GET", service.HomePageUrl+"/deployers/envinit", nil)
+	req, err := http.NewRequest("GET", service.HomePageUrl+"deployers/envinit", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -113,7 +113,7 @@ func (service *DiscoveryService) GetEnvInit(deployerHomePageUrl string) *models.
 }
 
 func (service *DiscoveryService) GetDeploymentUnicast(deployerHomePageUrl string) *models.ApiResponse {
-	req, err := http.NewRequest("GET", service.HomePageUrl+"/deployers/deployments", nil)
+	req, err := http.NewRequest("GET", service.HomePageUrl+"deployers/deployments", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -141,7 +141,7 @@ func (service *DiscoveryService) GetDeploymentUnicast(deployerHomePageUrl string
 }
 
 func (service *DiscoveryService) DeleteDeploymentId(deployment *models.ServerDeployment) *models.ApiResponse {
-	req, err := http.NewRequest("DELETE", service.HomePageUrl+"/deployers/deployments/"+deployment.Id, nil)
+	req, err := http.NewRequest("DELETE", service.HomePageUrl+"deployers/deployments/"+deployment.Id, nil)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
@@ -169,7 +169,7 @@ func (service *DiscoveryService) DeleteDeploymentId(deployment *models.ServerDep
 }
 
 func (service *DiscoveryService) PostDeploymentUnicast(deployment *models.ServerDeployment, deploymentFile []byte) *models.ApiResponse {
-	req, err := http.NewRequest("POST", service.HomePageUrl+"/deployers/deployments", bytes.NewBuffer(deploymentFile))
+	req, err := http.NewRequest("POST", service.HomePageUrl+"deployers/deployments", bytes.NewBuffer(deploymentFile))
 	if err != nil {
 		fmt.Print(err.Error())
 	}
