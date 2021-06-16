@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/ArthurHlt/go-eureka-client v1.1.0
-	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/jedib0t/go-pretty/v6 v6.2.2
 	github.com/leodido/go-urn v1.2.1 // indirect
